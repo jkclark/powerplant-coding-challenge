@@ -30,3 +30,5 @@ def test_calculate_powerplant_use():
         {"name": "windpark2", "p": 21.6},
     ]
     case.assertCountEqual(result, expected)
+
+    # Can also assert that the sum of the power is equal to the load

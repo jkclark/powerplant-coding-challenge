@@ -14,6 +14,9 @@ class Fuels(BaseModel):
     co2: int = Field(..., alias="co2(euro/ton)")
     wind: int = Field(..., alias="wind(%)")
 
+    def __getitem__(self, item):
+        return getattr(self, item)
+
 
 class PowerplantInfo(BaseModel):
     name: str
@@ -29,10 +32,10 @@ class Payload(BaseModel):
     powerplants: list[PowerplantInfo]
 
 
-powerplant_type_to_fuels = {
-    "gasfired": "gas(euro/MWh)",
-    "turbojet": "kerosine(euro/MWh)",
-    "windturbine": "wind(%)",
+powerplant_type_to_fuel = {
+    "gasfired": "gas",
+    "turbojet": "kerosine",
+    "windturbine": "wind",
 }
 
 
@@ -40,14 +43,16 @@ powerplant_type_to_fuels = {
 async def productionplan(payload: Payload):
     powerplants = []
     for powerplant_info in payload.powerplants:
+        fuel_cost = payload.fuels[powerplant_type_to_fuel[powerplant_info.type]]
         max_output = powerplant_info.pmax
+
+        # Windturbines don't have fuel cost, and their actual max output
+        # is dependent on the wind percentage
         if powerplant_info.type == "windturbine":
             fuel_cost = 0
             max_output = round(payload.fuels.wind / 100 * powerplant_info.pmax, 1)
-        elif powerplant_info.type == "turbojet":
-            fuel_cost = payload.fuels.kerosine
-        else:
-            fuel_cost = payload.fuels.gas
+
+        # Create powerplant
         powerplant = Powerplant(
             powerplant_info.name,
             fuel_cost,
@@ -56,6 +61,8 @@ async def productionplan(payload: Payload):
             powerplant_info.pmin,
             max_output,
         )
+
+        # Add it to list of powerplants
         powerplants.append(powerplant)
 
     return calculate_powerplant_use(payload.load, powerplants)

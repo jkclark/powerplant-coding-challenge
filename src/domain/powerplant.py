@@ -5,7 +5,7 @@ from dataclasses import dataclass
 class Powerplant:
     name: str
     fuel_cost: float
-    type: str  # Not even really necessary, we never use this after initialization
+    type: str  # Not even really necessary, we never use this after instantiation
     efficiency: float
     pmin: int
     pmax: int
