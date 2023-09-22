@@ -1,1 +1,1 @@
-uvicorn src.app:app --reload --port 8888
+uvicorn src.adapters.api:app --reload --port 8888
