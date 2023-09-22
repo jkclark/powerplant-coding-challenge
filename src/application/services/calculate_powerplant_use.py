@@ -26,7 +26,7 @@ def calculate_powerplant_use(load: int, powerplants: List[Powerplant]):
     return [
         {
             "name": pp.name,
-            "p": pp.use,
+            "p": pp.use or 0,
         }
         for pp in powerplants
     ]

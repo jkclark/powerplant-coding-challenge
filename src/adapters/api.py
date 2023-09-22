@@ -54,7 +54,6 @@ async def productionplan(payload: Payload):
             powerplant_info.type,
             powerplant_info.efficiency,
             powerplant_info.pmin,
-            # powerplant_info.pmax,
             max_output,
         )
         powerplants.append(powerplant)
